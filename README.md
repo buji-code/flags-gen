@@ -1,9 +1,9 @@
 # flags-gen
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/yuvalwz/flags-gen)](https://golang.org/releases)
-[![License](https://img.shields.io/github/license/yuvalwz/flags-gen)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/yuvalwz/flags-gen)](https://github.com/yuvalwz/flags-gen/releases)
-[![Go Report Card](https://goreportcard.com/badge/github.com/yuvalwz/flags-gen)](https://goreportcard.com/report/github.com/yuvalwz/flags-gen)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/buji-code/flags-gen)](https://golang.org/releases)
+[![License](https://img.shields.io/github/license/buji-code/flags-gen)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/buji-code/flags-gen)](https://github.com/buji-code/flags-gen/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/buji-code/flags-gen)](https://goreportcard.com/report/github.com/buji-code/flags-gen)
 
 A powerful Go code generation tool that automatically creates [pflags](https://github.com/spf13/pflag) `AddFlags` methods from Go structs with simple annotations. Perfect for CLI applications using [Cobra](https://github.com/spf13/cobra) or any application that needs command-line flag parsing.
 
@@ -35,7 +35,7 @@ A powerful Go code generation tool that automatically creates [pflags](https://g
 ### Using `go install`
 
 ```bash
-go install github.com/yuvalwz/flags-gen/cmd/flags-gen@latest
+go install github.com/buji-code/flags-gen/cmd/flags-gen@latest
 ```
 
 ### Using Homebrew
@@ -47,12 +47,12 @@ brew install flags-gen
 
 ### Binary Releases
 
-Download pre-built binaries from the [releases page](https://github.com/yuvalwz/flags-gen/releases).
+Download pre-built binaries from the [releases page](https://github.com/buji-code/flags-gen/releases).
 
 ### Building from Source
 
 ```bash
-git clone https://github.com/yuvalwz/flags-gen.git
+git clone https://github.com/buji-code/flags-gen.git
 cd flags-gen
 make build
 ```
@@ -429,8 +429,8 @@ For more detailed examples and use cases, see [docs/examples.md](docs/examples.m
 ### Getting Help
 
 - Check the [examples](docs/examples.md)
-- Search [existing issues](https://github.com/yuvalwz/flags-gen/issues)
-- Create a [new issue](https://github.com/yuvalwz/flags-gen/issues/new)
+- Search [existing issues](https://github.com/buji-code/flags-gen/issues)
+- Create a [new issue](https://github.com/buji-code/flags-gen/issues/new)
 
 ## License
 
