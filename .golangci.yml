@@ -24,10 +24,6 @@ linters-settings:
     extra-rules: false
   goimports:
     local-prefixes: github.com/yuvalwz/flags-gen
-  gomnd:
-    settings:
-      mnd:
-        checks: argument,case,condition,operation,return,assign
   govet:
     settings:
       printf:
@@ -45,6 +41,10 @@ linters-settings:
     require-explanation: false
     require-specific: false
   revive:
+    rules:
+      - name: exported
+      - name: var-naming
+      - name: package-comments
   whitespace:
     multi-if: false
     multi-func: false
