@@ -4,16 +4,17 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   release:
-    name: Release
     runs-on: ubuntu-latest
     steps:
-    - name: Check out code
+    - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -21,50 +22,19 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.21'
+        go-version: '1.23'
 
-    - name: Cache Go modules
-      uses: actions/cache@v3
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
       with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Run tests
-      run: go test ./...
-
-    - name: Build all platforms
-      run: make build-all
-
-    - name: Generate checksums
-      run: |
-        cd dist
-        sha256sum * > checksums.txt
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v5
       with:
-        files: |
-          dist/*
-        generate_release_notes: true
-        draft: false
-        prerelease: false
+        version: latest
+        args: release --clean
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  homebrew:
-    name: Update Homebrew Formula
-    needs: release
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
-    steps:
-    - name: Extract version
-      id: extract_version
-      run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
-    - name: Update Homebrew formula
-      uses: dawidd6/action-homebrew-bump-formula@v3
-      with:
-        token: ${{ secrets.HOMEBREW_TOKEN }}
-        formula: flags-gen
