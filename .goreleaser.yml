@@ -70,11 +70,17 @@ brews:
     homepage: "https://github.com/buji-code/flags-gen"
     description: "A Go code generator for creating command-line flag parsers from struct definitions"
     license: "MIT"
-    skip_upload: true  # Skip until homebrew-tap repository is created
+    skip_upload: false  # Enabled - homebrew-tap repository is ready
     test: |
       system "#{bin}/flags-gen version"
+      system "#{bin}/flags-gen --help"
     install: |
       bin.install "flags-gen"
+    caveats: |
+      Generate flag parsers from Go structs:
+        flags-gen -i input.go -o output.go
+      
+      See example usage at: https://github.com/buji-code/flags-gen#usage
 
 release:
   github:
