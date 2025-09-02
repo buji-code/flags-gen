@@ -24,7 +24,7 @@ jobs:
         go-version: ${{ matrix.go-version }}
 
     - name: Cache Go modules
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -52,7 +52,7 @@ jobs:
       run: go test -race -coverprofile=coverage.out ./...
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.out
 
@@ -69,7 +69,7 @@ jobs:
         go-version: '1.23'
 
     - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v3
+      uses: golangci/golangci-lint-action@v6
       with:
         version: latest
         args: --timeout=5m
@@ -118,7 +118,7 @@ jobs:
         ./bin/flags-gen --help
 
     - name: Upload binary artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: flags-gen-linux-amd64
         path: bin/flags-gen
