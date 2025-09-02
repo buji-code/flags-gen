@@ -24,14 +24,11 @@ linters-settings:
     extra-rules: false
   goimports:
     local-prefixes: github.com/yuvalwz/flags-gen
-  golint:
-    min-confidence: 0
   gomnd:
     settings:
       mnd:
         checks: argument,case,condition,operation,return,assign
   govet:
-    check-shadowing: true
     settings:
       printf:
         funcs:
@@ -44,12 +41,10 @@ linters-settings:
   misspell:
     locale: US
   nolintlint:
-    allow-leading-space: true
     allow-unused: false
     require-explanation: false
     require-specific: false
   revive:
-    min-confidence: 0
   whitespace:
     multi-if: false
     multi-func: false
@@ -128,6 +123,7 @@ issues:
   max-same-issues: 0
 
 output:
-  format: colored-line-number
+  formats:
+    - format: colored-line-number
   print-issued-lines: true
   print-linter-name: true
