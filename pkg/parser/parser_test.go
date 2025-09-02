@@ -44,7 +44,7 @@ type IgnoredConfig struct {
 }
 `
 
-	if err := os.WriteFile(testFile, []byte(testContent), 0644); err != nil {
+	if err := os.WriteFile(testFile, []byte(testContent), 0o600); err != nil {
 		t.Fatal(err)
 	}
 
@@ -117,7 +117,7 @@ type IgnoredConfig struct {
 
 func TestParser_toKebabCase(t *testing.T) {
 	parser := New()
-	
+
 	tests := []struct {
 		input    string
 		expected string
@@ -137,7 +137,7 @@ func TestParser_toKebabCase(t *testing.T) {
 	}
 }
 
-func TestParser_hasAnnotation(t *testing.T) {
+func TestParser_hasAnnotation(_ *testing.T) {
 	// This would need more complex AST setup to test properly
 	// For now, we test it indirectly through ParseFile
 }
@@ -169,7 +169,7 @@ func TestGetFlagMethod(t *testing.T) {
 
 func TestParser_parseDefaultValue(t *testing.T) {
 	parser := New()
-	
+
 	tests := []struct {
 		value     string
 		fieldType string

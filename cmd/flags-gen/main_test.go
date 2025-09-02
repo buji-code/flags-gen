@@ -50,7 +50,7 @@ type AppConfig struct {
 }
 `
 
-	if err := os.WriteFile(testFile, []byte(testContent), 0644); err != nil {
+	if err := os.WriteFile(testFile, []byte(testContent), 0o600); err != nil {
 		t.Fatal(err)
 	}
 
@@ -171,7 +171,7 @@ func TestCLI_MissingInput(t *testing.T) {
 	cmd := exec.Command("./flags-gen-test")
 	cmd.Dir = "."
 	output, err := cmd.CombinedOutput()
-	
+
 	// Should exit with error
 	if err == nil {
 		t.Error("Expected command to fail when input is missing")

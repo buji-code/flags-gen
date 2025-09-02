@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+
 	"github.com/yuvalwz/flags-gen/pkg/generator"
 	"github.com/yuvalwz/flags-gen/pkg/parser"
 )
@@ -18,7 +19,7 @@ var (
 )
 
 func main() {
-	var rootCmd = &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "flags-gen",
 		Short: "Generate pflags AddFlags methods from Go structs",
 		Long: `flags-gen is a code generation tool that parses Go structs marked with +flags-gen
@@ -32,12 +33,15 @@ Example:
 
 	rootCmd.Flags().StringVarP(&inputFile, "input", "i", "", "Input Go file containing structs with +flags-gen annotations (required)")
 	rootCmd.Flags().StringVarP(&outputFile, "output", "o", "", "Output file for generated flags code (optional, defaults to <input>_flags.go)")
-	rootCmd.MarkFlagRequired("input")
+	if err := rootCmd.MarkFlagRequired("input"); err != nil {
+		fmt.Fprintf(os.Stderr, "Error marking input flag as required: %v\n", err)
+		os.Exit(1)
+	}
 
-	var versionCmd = &cobra.Command{
+	versionCmd := &cobra.Command{
 		Use:   "version",
 		Short: "Print the version number",
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, _ []string) {
 			fmt.Printf("flags-gen version %s\n", version)
 		},
 	}
@@ -50,7 +54,7 @@ Example:
 	}
 }
 
-func runFlagsGen(cmd *cobra.Command, args []string) error {
+func runFlagsGen(_ *cobra.Command, _ []string) error {
 	if inputFile == "" {
 		return fmt.Errorf("input file is required")
 	}
@@ -111,17 +115,17 @@ func runFlagsGen(cmd *cobra.Command, args []string) error {
 	g := generator.New()
 	var allGenerated []string
 
-	for _, structInfo := range structs {
-		generated, err := g.GenerateFlags(structInfo)
+	for i := range structs {
+		generated, err := g.GenerateFlags(&structs[i])
 		if err != nil {
-			return fmt.Errorf("failed to generate flags for struct %s: %w", structInfo.Name, err)
+			return fmt.Errorf("failed to generate flags for struct %s: %w", structs[i].Name, err)
 		}
 		allGenerated = append(allGenerated, generated)
 	}
 
 	// Write output file
 	output := strings.Join(allGenerated, "\n\n")
-	if err := os.WriteFile(outputFile, []byte(output), 0644); err != nil {
+	if err := os.WriteFile(outputFile, []byte(output), 0o600); err != nil {
 		return fmt.Errorf("failed to write output file: %w", err)
 	}
 
@@ -129,7 +133,7 @@ func runFlagsGen(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// validateFilePath validates and cleans a file path to prevent path traversal attacks
+// validateFilePath validates and cleans a file path to prevent path traversal attacks.
 func validateFilePath(path string) (string, error) {
 	if path == "" {
 		return "", fmt.Errorf("file path cannot be empty")

@@ -54,7 +54,7 @@ func TestGenerator_GenerateFlags(t *testing.T) {
 		},
 	}
 
-	generated, err := generator.GenerateFlags(structInfo)
+	generated, err := generator.GenerateFlags(&structInfo)
 	if err != nil {
 		t.Fatalf("GenerateFlags failed: %v", err)
 	}
@@ -111,7 +111,7 @@ func TestGenerator_GenerateFlags_NoImports(t *testing.T) {
 		},
 	}
 
-	generated, err := generator.GenerateFlags(structInfo)
+	generated, err := generator.GenerateFlags(&structInfo)
 	if err != nil {
 		t.Fatalf("GenerateFlags failed: %v", err)
 	}

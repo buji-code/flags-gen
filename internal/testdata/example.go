@@ -2,13 +2,11 @@ package testdata
 
 import (
 	"time"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // +flags-gen
 // OperatorConfig defines configuration options for the operator
 type OperatorConfig struct {
-	metav1.TypeMeta `json:",inline"`
 
 	// Controllers is a list of controllers to enable. '*' enables all on-by-default controllers,
 	// 'foo' enables the controller named 'foo', '-foo' disables the controller named 'foo'.

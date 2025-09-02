@@ -16,19 +16,19 @@ import (
 	"github.com/yuvalwz/flags-gen/pkg/types"
 )
 
-// Parser handles parsing Go source files for structs with flags-gen annotations
+// Parser handles parsing Go source files for structs with flags-gen annotations.
 type Parser struct {
 	fileSet *token.FileSet
 }
 
-// New creates a new Parser instance
+// New creates a new Parser instance.
 func New() *Parser {
 	return &Parser{
 		fileSet: token.NewFileSet(),
 	}
 }
 
-// ParseFile parses a Go source file and returns structs marked with +flags-gen
+// ParseFile parses a Go source file and returns structs marked with +flags-gen.
 func (p *Parser) ParseFile(filename string) ([]types.StructInfo, error) {
 	src, err := parser.ParseFile(p.fileSet, filename, nil, parser.ParseComments)
 	if err != nil {
@@ -36,7 +36,7 @@ func (p *Parser) ParseFile(filename string) ([]types.StructInfo, error) {
 	}
 
 	var structs []types.StructInfo
-	
+
 	// Walk through all declarations in the file
 	for _, decl := range src.Decls {
 		if genDecl, ok := decl.(*ast.GenDecl); ok && genDecl.Tok == token.TYPE {
@@ -60,12 +60,12 @@ func (p *Parser) ParseFile(filename string) ([]types.StructInfo, error) {
 	return structs, nil
 }
 
-// hasAnnotation checks if the comment group contains +flags-gen annotation
+// hasAnnotation checks if the comment group contains +flags-gen annotation.
 func (p *Parser) hasAnnotation(commentGroup *ast.CommentGroup) bool {
 	if commentGroup == nil {
 		return false
 	}
-	
+
 	for _, comment := range commentGroup.List {
 		if strings.Contains(comment.Text, "+flags-gen") {
 			return true
@@ -74,7 +74,7 @@ func (p *Parser) hasAnnotation(commentGroup *ast.CommentGroup) bool {
 	return false
 }
 
-// parseStruct parses a struct and extracts field information for flag generation
+// parseStruct parses a struct and extracts field information for flag generation.
 func (p *Parser) parseStruct(name string, structType *ast.StructType, packageName string) (types.StructInfo, error) {
 	structInfo := types.StructInfo{
 		Name:        name,
@@ -103,7 +103,7 @@ func (p *Parser) parseStruct(name string, structType *ast.StructType, packageNam
 			}
 
 			// Add required imports based on field type
-			if fieldInfo.Type == "time.Duration" {
+			if fieldInfo.Type == types.TypeTimeDuration {
 				imports["time"] = true
 			}
 
@@ -125,7 +125,7 @@ func (p *Parser) parseStruct(name string, structType *ast.StructType, packageNam
 	return structInfo, nil
 }
 
-// parseField extracts information from a single struct field
+// parseField extracts information from a single struct field.
 func (p *Parser) parseField(name string, field *ast.Field) (types.FieldInfo, error) {
 	fieldInfo := types.FieldInfo{
 		Name: name,
@@ -143,7 +143,7 @@ func (p *Parser) parseField(name string, field *ast.Field) (types.FieldInfo, err
 		tag := strings.Trim(field.Tag.Value, "`")
 		fieldInfo.JSONTag = p.extractJSONTag(tag)
 		fieldInfo.FlagName = p.deriveFlagName(name, fieldInfo.JSONTag)
-		
+
 		// Look for default values in tags
 		fieldInfo.DefaultValue = p.extractDefaultFromTag(tag, fieldType)
 	} else {
@@ -156,7 +156,7 @@ func (p *Parser) parseField(name string, field *ast.Field) (types.FieldInfo, err
 	return fieldInfo, nil
 }
 
-// parseType converts an ast.Expr representing a type to a string
+// parseType converts an ast.Expr representing a type to a string.
 func (p *Parser) parseType(expr ast.Expr) (string, error) {
 	switch t := expr.(type) {
 	case *ast.Ident:
@@ -178,7 +178,7 @@ func (p *Parser) parseType(expr ast.Expr) (string, error) {
 	}
 }
 
-// extractJSONTag extracts the json tag value from struct tag
+// extractJSONTag extracts the json tag value from struct tag.
 func (p *Parser) extractJSONTag(tag string) string {
 	re := regexp.MustCompile(`json:"([^"]*)"`)
 	matches := re.FindStringSubmatch(tag)
@@ -192,7 +192,7 @@ func (p *Parser) extractJSONTag(tag string) string {
 	return ""
 }
 
-// extractDefaultFromTag extracts default values from struct tags
+// extractDefaultFromTag extracts default values from struct tags.
 func (p *Parser) extractDefaultFromTag(tag, fieldType string) interface{} {
 	re := regexp.MustCompile(`default:"([^"]*)"`)
 	matches := re.FindStringSubmatch(tag)
@@ -203,31 +203,31 @@ func (p *Parser) extractDefaultFromTag(tag, fieldType string) interface{} {
 	return nil
 }
 
-// parseDefaultValue converts string default value to appropriate type
+// parseDefaultValue converts string default value to appropriate type.
 func (p *Parser) parseDefaultValue(value, fieldType string) interface{} {
 	switch fieldType {
-	case "string":
+	case types.TypeString:
 		return value
-	case "int", "int32", "int64":
+	case types.TypeInt, types.TypeInt32, types.TypeInt64:
 		if i, err := strconv.Atoi(value); err == nil {
 			return i
 		}
-	case "bool":
+	case types.TypeBool:
 		if b, err := strconv.ParseBool(value); err == nil {
 			return b
 		}
-	case "[]string":
+	case types.TypeStringSlice:
 		if value != "" {
 			return strings.Split(value, ",")
 		}
 		return []string{}
-	case "time.Duration":
+	case types.TypeTimeDuration:
 		return value // Keep as string, will be parsed later
 	}
 	return value
 }
 
-// deriveFlagName creates a flag name from field name and json tag
+// deriveFlagName creates a flag name from field name and json tag.
 func (p *Parser) deriveFlagName(fieldName, jsonTag string) string {
 	if jsonTag != "" {
 		return p.toKebabCase(jsonTag)
@@ -235,23 +235,23 @@ func (p *Parser) deriveFlagName(fieldName, jsonTag string) string {
 	return p.toKebabCase(fieldName)
 }
 
-// toKebabCase converts camelCase to kebab-case
+// toKebabCase converts camelCase to kebab-case.
 func (p *Parser) toKebabCase(s string) string {
 	// Handle sequences of capital letters (e.g., HTTPPort -> HTTP-Port)
 	re1 := regexp.MustCompile(`([A-Z]+)([A-Z][a-z])`)
 	result := re1.ReplaceAllString(s, "${1}-${2}")
-	
+
 	// Handle normal camelCase (e.g., camelCase -> camel-Case)
 	re2 := regexp.MustCompile(`([a-z])([A-Z])`)
 	result = re2.ReplaceAllString(result, "${1}-${2}")
-	
+
 	return strings.ToLower(result)
 }
 
-// parseFieldComment extracts description from field comments
-func (p *Parser) parseFieldComment(comment *ast.CommentGroup, doc *ast.CommentGroup) string {
+// parseFieldComment extracts description from field comments.
+func (p *Parser) parseFieldComment(comment, doc *ast.CommentGroup) string {
 	var description string
-	
+
 	// Check doc comment first (appears before the field)
 	if doc != nil {
 		for _, c := range doc.List {
@@ -259,12 +259,12 @@ func (p *Parser) parseFieldComment(comment *ast.CommentGroup, doc *ast.CommentGr
 			text = strings.TrimPrefix(text, "/*")
 			text = strings.TrimSuffix(text, "*/")
 			text = strings.TrimSpace(text)
-			
+
 			// Skip annotations like +optional
 			if strings.HasPrefix(text, "+") {
 				continue
 			}
-			
+
 			if description == "" {
 				description = text
 			} else {
@@ -272,7 +272,7 @@ func (p *Parser) parseFieldComment(comment *ast.CommentGroup, doc *ast.CommentGr
 			}
 		}
 	}
-	
+
 	// Check inline comment if no doc comment found
 	if description == "" && comment != nil {
 		for _, c := range comment.List {
@@ -282,29 +282,29 @@ func (p *Parser) parseFieldComment(comment *ast.CommentGroup, doc *ast.CommentGr
 			break // Only take the first inline comment
 		}
 	}
-	
+
 	return description
 }
 
-// formatDefaultValueCode formats a default value for code generation
+// formatDefaultValueCode formats a default value for code generation.
 func (p *Parser) formatDefaultValueCode(value interface{}, fieldType string) string {
 	if value == nil {
 		return p.getZeroValue(fieldType)
 	}
-	
+
 	switch fieldType {
-	case "string":
-		return fmt.Sprintf(`"%s"`, value)
-	case "[]string":
+	case types.TypeString:
+		return fmt.Sprintf("%q", value)
+	case types.TypeStringSlice:
 		if slice, ok := value.([]string); ok {
 			quoted := make([]string, len(slice))
 			for i, s := range slice {
-				quoted[i] = fmt.Sprintf(`"%s"`, s)
+				quoted[i] = fmt.Sprintf("%q", s)
 			}
 			return fmt.Sprintf("[]string{%s}", strings.Join(quoted, ", "))
 		}
 		return `[]string{}`
-	case "time.Duration":
+	case types.TypeTimeDuration:
 		if str, ok := value.(string); ok {
 			return fmt.Sprintf("%s*time.Second", strings.TrimSuffix(str, "s"))
 		}
@@ -314,18 +314,18 @@ func (p *Parser) formatDefaultValueCode(value interface{}, fieldType string) str
 	}
 }
 
-// getZeroValue returns the zero value for a given type
+// getZeroValue returns the zero value for a given type.
 func (p *Parser) getZeroValue(fieldType string) string {
 	switch fieldType {
-	case "string":
+	case types.TypeString:
 		return `""`
-	case "int", "int32", "int64", "uint", "uint32", "uint64", "float32", "float64":
+	case types.TypeInt, "int32", "int64", "uint", "uint32", "uint64", "float32", "float64":
 		return "0"
-	case "bool":
+	case types.TypeBool:
 		return "false"
-	case "[]string", "[]int":
+	case types.TypeStringSlice, "[]int":
 		return fmt.Sprintf("%s{}", fieldType)
-	case "time.Duration":
+	case types.TypeTimeDuration:
 		return "0"
 	default:
 		return `""`

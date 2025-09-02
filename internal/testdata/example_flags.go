@@ -3,8 +3,9 @@
 package testdata
 
 import (
-	"github.com/spf13/pflag"
 	"time"
+
+	"github.com/spf13/pflag"
 )
 
 // AddFlags adds all the flags from OperatorConfig to the given FlagSet

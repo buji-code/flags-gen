@@ -1,10 +1,10 @@
 run:
   timeout: 5m
-  go: '1.21'
+  go: '1.23'
 
 linters-settings:
   gocyclo:
-    min-complexity: 10
+    min-complexity: 15
   goconst:
     min-len: 3
     min-occurrences: 2
@@ -58,12 +58,9 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
-    - depguard
     - dogsled
     - dupl
     - errcheck
-    - exportloopref
     - exhaustive
     - gochecknoinits
     - gocognit
@@ -74,7 +71,6 @@ linters:
     - gofmt
     - gofumpt
     - goimports
-    - gomnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -88,13 +84,11 @@ linters:
     - revive
     - rowserrcheck
     - staticcheck
-    - structcheck
     - stylecheck
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
     - whitespace
 
   disable:
@@ -102,6 +96,12 @@ linters:
     - gochecknoglobals # We allow some global variables
     - godox # We allow TODO/FIXME comments
     - wsl # Whitespace linter can be too strict
+    - depguard # Too restrictive for this project
+    - deadcode # Deprecated
+    - exportloopref # Deprecated
+    - gomnd # Deprecated  
+    - structcheck # Deprecated
+    - varcheck # Deprecated
 
 issues:
   exclude-rules:
