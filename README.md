@@ -41,7 +41,7 @@ go install github.com/buji-code/flags-gen/cmd/flags-gen@latest
 ### Using Homebrew
 
 ```bash
-# Coming soon
+brew tap buji-code/tap
 brew install flags-gen
 ```
 
